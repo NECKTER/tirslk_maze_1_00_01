@@ -142,8 +142,19 @@ while(1){
 // Assumes: Reflectance_Init() has been called
 uint8_t Reflectance_Center(uint32_t time){
     // write this as part of Lab 6
+    uint8_t result;
+        P5->OUT |= 0x08;    //set output 1
+        P7->DIR |= 0xFF;    //set to output
+        P7->OUT |= 0xFF;    //set output 1
+        Clock_Delay1us(10);
 
-  return 0; // replace this line
+        P7->DIR &= ~0xFF;    //set to input
+        Clock_Delay1ms(1);
+
+        result = P7->IN;
+        P5->OUT &= ~0x08; //setoutput to 0
+
+  return result; // replace this line
 }
 
 
