@@ -106,22 +106,21 @@ void Reflectance_Init(void){
 // Input: time to wait in usec
 // Output: sensor readings
 // Assumes: Reflectance_Init() has been called
-uint8_t Reflectance_Read(uint32_t time){
+uint8_t Reflectance_Read(uint32_t time){//part2
 uint8_t result;
     // write this as part of Lab 6
-while(1){
-    P5->OUT |= 0x08;    //set output 1
-    P7->DIR |= 0x01;    //set to output
-    P7->OUT |= 0x01;    //set output 1
-    Clock_Delay1us(10);
-    P7->DIR &= ~0x01;    //set to input
-    for (int i = 0; i < 10000; i += 1) { //read the ir value as the output diminishes to 0
-        result = P7->IN;
-        P1->OUT = result;
-    }
-    P5->OUT &= ~0x08; //setoutput to 0
-    Clock_Delay1ms(10);
-    }
+       P5->OUT |= 0x08;    //set output 1
+       P7->DIR |= 0xFF;    //set to output
+       P7->OUT |= 0xFF;    //set output 1
+       Clock_Delay1us(10);
+
+       P7->DIR &= ~0xFF;    //set to input
+       Clock_Delay1ms(20);
+
+       result = P7->IN;
+       P5->OUT &= ~0x08; //setoutput to 0
+
+ return result; // replace this line
 }
 
 // ------------Reflectance_Center------------
@@ -140,34 +139,51 @@ while(1){
 // 1,0          left left      off to right
 // 0,0          neither        lost
 // Assumes: Reflectance_Init() has been called
-uint8_t Reflectance_Center(uint32_t time){
+uint8_t Reflectance_Center(uint32_t time){ //part1
     // write this as part of Lab 6
     uint8_t result;
-        P5->OUT |= 0x08;    //set output 1
-        P7->DIR |= 0xFF;    //set to output
-        P7->OUT |= 0xFF;    //set output 1
-        Clock_Delay1us(10);
-
-        P7->DIR &= ~0xFF;    //set to input
-        Clock_Delay1ms(1);
-
+    while(1){
+    P5->OUT |= 0x08;    //set output 1
+    P7->DIR |= 0x01;    //set to output
+    P7->OUT |= 0x01;    //set output 1
+    Clock_Delay1us(10);
+    P7->DIR &= ~0x01;    //set to input
+    for (int i = 0; i < 10000; i += 1) { //read the ir value as the output diminishes to 0
         result = P7->IN;
-        P5->OUT &= ~0x08; //setoutput to 0
-
-  return result; // replace this line
+        P1->OUT = result;
+    }
+    P5->OUT &= ~0x08; //setoutput to 0
+    Clock_Delay1ms(10);
+    }
 }
 
 
 // Perform sensor integration
 // Input: data is 8-bit result from line sensor
 // Output: position in 0.1mm relative to center of line
-int32_t Reflectance_Position(uint8_t data){
+int32_t Reflectance_Position(uint8_t data){//part3
     // write this as part of Lab 6
+    int32_t position = 0;
+    int w[] = {332,237,142,47,-47,-142,-237,-322};
+    int irs[8];
+    //data into array
+    for (int i = 0; i < 8; ++i) {
+        irs[7-i] = data%2;
+        data = data >> 1;
+    }
 
+    //calculate position
+    int count = 0;
+    for (int i = 0; i < 8; ++i) {
+        if(irs[i]==1){
+            position += w[i];
+            count++;
+        }
+    }
+    position = position/count;
+    printf("%d\n",position);
 
-
-
- return 0; // replace this line
+ return position; // replace this line
 }
 
 
