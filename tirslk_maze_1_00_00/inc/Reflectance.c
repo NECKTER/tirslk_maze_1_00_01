@@ -88,18 +88,11 @@ void Reflectance_Init(void){
     P5->OUT = 0x00;
 
     //init P1
-    P5->SEL0 = 0x00;
-    P5->SEL1 = 0x00;
-    P5->DIR = 0xFF;                        // make p5.3 output
-    P5->REN = 0x00;
-    P5->OUT = 0x00;
-
-    //test
-    P2->SEL0 = 0x00;
-    P2->SEL1 = 0x00;                        // configure P2.2-P2.0 as GPIO
-    P2->DS = 0x07;                          // make P2.2-P2.0 high drive strength
-    P2->DIR = 0x07;                         // make P2.2-P2.0 out
-    P2->OUT = 0x00;                         // all LEDs off
+    P1->SEL0 = 0x00;
+    P1->SEL1 = 0x00;
+    P1->DIR = 0xFF;                        // make p1 output
+    P1->REN = 0x00;
+    P1->OUT = 0x00;
 }
 
 // ------------Reflectance_Read------------
@@ -117,17 +110,16 @@ uint8_t Reflectance_Read(uint32_t time){
 uint8_t result;
     // write this as part of Lab 6
 while(1){
-    P5->OUT |= 0x08;    //turn on output
+    P5->OUT |= 0x08;    //set output 1
     P7->DIR |= 0x01;    //set to output
+    P7->OUT |= 0x01;    //set output 1
     Clock_Delay1us(10);
     P7->DIR &= ~0x01;    //set to input
-    for (int i = 0; i < 10000; i += 1) {
+    for (int i = 0; i < 10000; i += 1) { //read the ir value as the output diminishes to 0
         result = P7->IN;
         P1->OUT = result;
-        int test = result;
-        printf("result: %i ",test);  //print value for test
     }
-    P5->OUT &= ~0x08;
+    P5->OUT &= ~0x08; //setoutput to 0
     Clock_Delay1ms(10);
     }
 }
