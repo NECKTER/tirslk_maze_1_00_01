@@ -57,9 +57,9 @@ main:  .asmfunc
        MOV R0,#1       ; Initial seed
        BL  Seed        ; M=1
 loop   BL  Rand
-       LDR R1,nAddr
-       STR R0,[R1]
-       B   loop
+       LDR R1,nAddr		;loads address of n into r1
+       STR R0,[R1]		;value of R0 is stored into n
+       B   loop			;Value of N is never changing and R0 = n every time the loop ends
        .endasmfunc
 
 ;------------Random------------
