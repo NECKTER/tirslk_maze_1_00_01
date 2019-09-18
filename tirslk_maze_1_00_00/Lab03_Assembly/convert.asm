@@ -57,7 +57,24 @@
 ; Modifies: R1, R2, R3
 Convert:   .asmfunc
 ; put your solution here
+;Comprare
 
+		LDR R1, IRSlope
+		LDR R2, IROffset
+		LDR R3, IRMax
+
+		CMP R0, R3 ;Updates R0 = R0 - 2552
+		BCC LessThan
+		BCS GreaterThan
+LessThan
+		MOV R0, #800
+		B end
+
+GreaterThan
+		ADD R0, R0, R2 ;compute n - offset
+		UDIV R0, R1, R0   ;Finish Arithmetic and store into R0
+
+end
         BX LR
       .endasmfunc
       .align 4
