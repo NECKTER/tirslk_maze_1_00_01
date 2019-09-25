@@ -67,8 +67,8 @@ loop   BL  Rand
 ; Linear congruential generator
 ; from Numerical Recipes by Press et al.
 Seed: .asmfunc
-      LDR R1,MAddr ; R1=&M
-      STR R0,[R1]  ; set M
+      LDR R1,MAddr ; R1=&M<--
+      STR R0,[R1]  ; set M-->
       BX  LR
       .endasmfunc
 Rand: .asmfunc

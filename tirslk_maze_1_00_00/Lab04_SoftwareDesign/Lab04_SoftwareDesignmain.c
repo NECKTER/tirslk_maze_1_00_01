@@ -48,14 +48,14 @@ enum scenario {
     LeftTooClose = 1,
     RightTooClose = 2,
     CenterTooClose = 4,
-    Straight = 8,
-    LeftTurn = 9,
-    RightTurn = 10,
-    TeeJoint = 11,
-    LeftJoint = 12,
-    RightJoint = 13,
-    CrossRoad = 14,
-    Blocked = 15
+    Straight = 8,//center only
+    LeftTurn = 9,//left only
+    RightTurn = 10,//right only
+    TeeJoint = 11,//left and right
+    LeftJoint = 12,//center and left
+    RightJoint = 13,//center and right
+    CrossRoad = 14,//everything open
+    Blocked = 15//all blocked
 };
 typedef enum scenario scenario_t;
 
@@ -65,17 +65,51 @@ typedef enum scenario scenario_t;
 #define CENTERMIN 150  // min distance to wall in the front
 scenario_t Classify(int32_t Left, int32_t Center, int32_t Right){
   scenario_t result=Error;
-  // write this code
-  return result;
+  //left to close -> right to close -> center to close -> all to close
+  // favor right -> center -> left -> turn around
+  //for left and right >= 354 means turn possible
+  //center >600 straight is avalible
+  //Error if any input is below 50 or greater than 800
+  if(Left < 50 | Center < 50 | Right < 50 |Left > 800 | Center > 800 | Right > 800 ) return Error;
+
+  if(Left < SIDEMIN)result+=1;
+  if(Right < SIDEMIN)result+=2;
+  if(Center < CENTERMIN)result+=4;
+  if(result > 0)return result;
+
+  int options = 0;
+  if(Left >= SIDEMAX)options+=1;
+  if(Right >= SIDEMAX)options+=2;
+  if(Center >= CENTEROPEN)options+=4;
+  switch (options) {
+    case 0:
+        return Blocked;
+    case 1:
+        return LeftTurn;
+    case 2:
+        return RightTurn;
+    case 3:
+        return TeeJoint;
+    case 4:
+        return Straight;
+    case 5:
+        return LeftJoint;
+    case 6:
+        return RightJoint;
+    case 7:
+        return CrossRoad;
+    default://not possible
+        return Error;
+  }
 }
 
 #define IRSlope 1195172
 #define IROffset -1058
 #define IRMax 2552
-
+//D = 1195172/(n – 1058)
 int32_t Convert(int32_t n){
-    // write this code
-  return 0; // replace this line
+    if(n < 2525) return 800;
+  return (1195172/(n-1058));
 }
 // ***********testing of Convert*********
 int32_t const ADCBuffer[16]={2000, 2733, 3466, 4199, 4932, 5665, 6398, 7131, 7864, 8597, 9330, 10063, 10796, 11529, 12262, 12995};
@@ -146,7 +180,7 @@ void Program4_3(void){ // will take over 16 hours to complete
 
 void main(void){
   // run one of these
-  Program4_1();
-//  Program4_2();
+//  Program4_1();
+  Program4_2();
 //  Program4_3();
 }

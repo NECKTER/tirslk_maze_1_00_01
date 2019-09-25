@@ -1472,3 +1472,89 @@ directory of your installation. View the ReadMe.txt file there
 for instructions.
 (Emulation package 8.2.0.00004)
 
+!SESSION 2019-09-24 23:10:42.960 -----------------------------------------------
+eclipse.buildId=4.8.0.I20180611-0500
+java.version=1.8.0_144
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Framework arguments:  -product com.ti.ccstudio.branding.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product com.ti.ccstudio.branding.product
+
+!ENTRY com.ti.common.core 1 0 2019-09-24 23:10:53.430
+!MESSAGE path=ccs_base/DebugServer
+
+!ENTRY com.ti.common.core 1 0 2019-09-24 23:10:53.430
+!MESSAGE debugServerDir=C:/ti/ccs910/ccs/ccs_base/DebugServer
+
+!ENTRY org.eclipse.launchbar.core 2 0 2019-09-24 23:11:07.637
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2019-09-24 23:11:07.657
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2019-09-24 23:11:07.657
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY com.ti.ccstudio.ui 1 0 2019-09-24 23:11:08.653
+!MESSAGE CCS IDE session started!
+	CCS build: 9.1.0.00010
+	CCS location: C:/ti/ccs910/ccs
+	Workspace location: C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.037
+!MESSAGE constructor
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.037
+!MESSAGE done with directories
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.037
+!MESSAGE loading ti_logger
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.041
+!MESSAGE Platform os: win32
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.041
+!MESSAGE loading cToolsIF
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.061
+!MESSAGE loading cTools
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.088
+!MESSAGE loading TraceFactory
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.116
+!MESSAGE loading sqlite3
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.148
+!MESSAGE loading CloudTrace
+
+!ENTRY com.ti.dbgtrc.webapp.CloudTraceInterface 0 0 2019-09-24 23:11:09.340
+!MESSAGE CloudTrace interface loaded
+
+!ENTRY org.eclipse.core.jobs 4 2 2019-09-25 15:51:00.968
+!MESSAGE An internal error occurred during: "".
+!STACK 0
+java.lang.NullPointerException
+	at com.ti.ccstudio.leru.model.VarExprCellModifier$1.run(VarExprCellModifier.java:56)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:60)
+
+!ENTRY org.eclipse.core.jobs 4 2 2019-09-25 15:51:01.235
+!MESSAGE An internal error occurred during: "".
+!STACK 0
+java.lang.NullPointerException
+	at com.ti.ccstudio.leru.model.VarExprCellModifier$1.run(VarExprCellModifier.java:56)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:60)
+
+!ENTRY org.eclipse.core.jobs 4 2 2019-09-25 15:51:12.408
+!MESSAGE An internal error occurred during: "".
+!STACK 0
+java.lang.NullPointerException
+	at com.ti.ccstudio.leru.model.VarExprCellModifier$1.run(VarExprCellModifier.java:56)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:60)
+
+!ENTRY org.eclipse.core.jobs 4 2 2019-09-25 15:54:33.268
+!MESSAGE An internal error occurred during: "".
+!STACK 0
+java.lang.NullPointerException
+	at com.ti.ccstudio.leru.model.VarExprCellModifier$1.run(VarExprCellModifier.java:56)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:60)
