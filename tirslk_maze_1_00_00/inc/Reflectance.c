@@ -86,6 +86,11 @@ void Reflectance_Init(void){
     P5->DIR = 0x08;                        // make p5.3 output
     P5->REN = 0x00;
     P5->OUT = 0x00;
+    P9->SEL0 = 0x00;
+    P9->SEL1 = 0x00;
+    P9->DIR = 0x04;                        // make p9.2 output
+    P9->REN = 0x00;
+    P9->OUT = 0x00;
 
     //init P1
     P1->SEL0 = 0x00;
@@ -109,7 +114,6 @@ void Reflectance_Init(void){
 uint8_t Reflectance_Read(uint32_t time){//part2
 uint8_t result;
     // write this as part of Lab 6
-       P5->OUT |= 0x08;    //set output 1
        P7->DIR |= 0xFF;    //set to output
        P7->OUT |= 0xFF;    //set output 1
        Clock_Delay1us(10);
@@ -118,7 +122,6 @@ uint8_t result;
        Clock_Delay1ms(20);
 
        result = P7->IN;
-       P5->OUT &= ~0x08; //setoutput to 0
 
  return result; // replace this line
 }
@@ -181,7 +184,7 @@ int32_t Reflectance_Position(uint8_t data){//part3
         }
     }
     position = position/count;
-    printf("%d\n",position);
+//    printf("%d\n",position);
 
  return position; // replace this line
 }
