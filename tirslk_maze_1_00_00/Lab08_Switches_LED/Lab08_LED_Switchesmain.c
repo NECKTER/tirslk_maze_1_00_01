@@ -118,6 +118,13 @@ int Program8_4(void){
 
 void Security_Init(void){
     // write this code
+    P5->SEL0 = 0x00;
+    P5->SEL1 = 0x00;
+    P5->DIR |= 0x10;    //set 5.4 as out
+    P5->DIR &= ~0x07;   //set 5.0-2 as input
+    P5->REN |= 0x07;    //set switches all pull-up
+    P5->OUT &= ~0x00;
+
 }
 
 // *********Security_InputActivate******
@@ -125,7 +132,11 @@ void Security_Init(void){
 // inputs: none
 // output: true if armed, false if disarmed
 uint8_t Security_InputActivate(void){
-  return 0; // replace this line
+    uint8_t armed = 0;
+    if ((P5->IN&0x04) == 0x04){
+        armed = 1;
+    }
+  return armed; // replace this line
 }
 // *********Security_InputSensors******
 // read window sensors input
@@ -135,7 +146,8 @@ uint8_t Security_InputActivate(void){
 //         0x02 the other pressed
 //         0x03 both pressed
 uint8_t Security_InputSensors(void){
-  return 0; // replace this line
+    uint8_t sensor = P5->IN&0x03;
+  return sensor; // replace this line
 }
 // *********Security_OutputAlarm******
 // write to alarm
@@ -144,6 +156,7 @@ uint8_t Security_InputSensors(void){
 // output: none
 void Security_OutputAlarm(uint8_t data){
     // write this code
+    if(data == 1)Security_ToggleAlarm();
 }
 // *********Security_ToggleAlarm******
 // toggle alarm output
@@ -151,14 +164,27 @@ void Security_OutputAlarm(uint8_t data){
 // output: none
 void Security_ToggleAlarm(void){
     // write this code
+    int wait = 250;
+    P5->OUT |= 0x10;
+    Clock_Delay1ms(wait);
+    P5->OUT &= ~0x10;
+    Clock_Delay1ms(wait);
 }
 
 int main(void){
   Clock_Init48MHz(); // makes it 48 MHz
   TExaS_Init(LOGICANALYZER_P5);
   Security_Init();   // sensors and alarm
-
+  uint8_t armed = 0;
+  uint8_t sensors = 0;
   while(1){
-      // write this code
+      armed = Security_InputActivate();
+      if(armed){
+          sensors = Security_InputSensors();
+          if(sensors > 0){
+              Security_OutputAlarm(1);
+          }
+      }
+      Clock_Delay1ms(100);
   }
 }
