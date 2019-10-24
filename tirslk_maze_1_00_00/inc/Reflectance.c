@@ -69,6 +69,7 @@ policies, either expressed or implied, of the FreeBSD Project.
 // initially off.
 // Input: none
 // Output: none
+
 void Reflectance_Init(void){
     // write this as part of Lab 6
     Clock_Init48MHz();
@@ -77,27 +78,25 @@ void Reflectance_Init(void){
     P7->SEL0 = 0x00;
     P7->SEL1 = 0x00;
     P7->DIR = 0x00;                         // make all of p7 an input
-    P7->REN = 0x00;
     P7->OUT = 0x00;
 
     //init controller
-    P5->SEL0 = 0x00;
-    P5->SEL1 = 0x00;
-    P5->DIR = 0x08;                        // make p5.3 output
-    P5->REN = 0x00;
-    P5->OUT = 0x00;
-    P9->SEL0 = 0x00;
-    P9->SEL1 = 0x00;
-    P9->DIR = 0x04;                        // make p9.2 output
-    P9->REN = 0x00;
-    P9->OUT = 0x00;
+    P5->SEL0 &= ~0x08;
+    P5->SEL1 &= ~0x08;
+    P5->DIR |= 0x08;                        // make p5.3 output
+    P5->OUT |= 0x08;
+
+    P9->SEL0 &= ~0x04;
+    P9->SEL1 &= ~0x04;
+    P9->DIR |= 0x04;                        // make p9.2 output
+    P9->OUT |= 0x04;
 
     //init P1
-    P1->SEL0 = 0x00;
-    P1->SEL1 = 0x00;
-    P1->DIR = 0xFF;                        // make p1 output
-    P1->REN = 0x00;
-    P1->OUT = 0x00;
+//    P1->SEL0 = 0x00;
+//    P1->SEL1 = 0x00;
+//    P1->DIR = 0xFF;                        // make p1 output
+//    P1->REN = 0x00;
+//    P1->OUT = 0x00;
 }
 
 // ------------Reflectance_Read------------
@@ -200,6 +199,15 @@ int32_t Reflectance_Position(uint8_t data){//part3
 // Assumes: Reflectance_Init() has been called
 void Reflectance_Start(void){
     // write this as part of Lab 10
+
+        // write this as part of Lab 6
+   P5->OUT |= 0x08;
+   P9->OUT |= 0x04;
+
+   P7->DIR |= 0xFF;    //set to output
+   P7->OUT |= 0xFF;    //set output 1
+   Clock_Delay1us(10);
+   P7->DIR &= ~0xFF;    //set to input
 }
 
 
@@ -213,6 +221,10 @@ void Reflectance_Start(void){
 // Assumes: Reflectance_Start() was called 1 ms ago
 uint8_t Reflectance_End(void){
     // write this as part of Lab 10
- return 0; // replace this line
+    uint8_t result = P7->IN;
+    P5->OUT &= ~0x08;
+    P9->OUT &= ~0x04;
+
+ return result; // replace this line
 }
 
