@@ -74,12 +74,21 @@ policies, either expressed or implied, of the FreeBSD Project.
 int interrupt_count = 1;
 uint8_t irData = 0;
 uint8_t bumpData = 0;
+#define SIZE 256
+uint8_t P1Buf[SIZE];
+uint8_t P2Buf[SIZE];
+uint32_t I=0;
 
 void Debug_Init(void){
   // write this as part of Lab 10
 }
 void Debug_Dump(uint8_t x, uint8_t y){
   // write this as part of Lab 10
+    if(I < SIZE){
+        P1Buf[I] = x;
+        P2Buf[I] = y;
+        I++;
+    }
 }
 void Debug_FlashInit(void){ 
   // write this as part of Lab 10
