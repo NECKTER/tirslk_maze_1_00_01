@@ -72,35 +72,48 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\FlashProgram.h"
 
 int interrupt_count = 1;
-uint8_t irData = 0;
-uint8_t bumpData = 0;
 #define SIZE 256
-uint8_t P1Buf[SIZE];
-uint8_t P2Buf[SIZE];
-uint32_t I=0;
+#define ROM_start 0x00020000
+#define ROM_end 0x0003FFFF
+uint8_t IRBuf[SIZE];
+uint8_t SWBuf[SIZE];
+uint32_t I;
+uint8_t Semaphore = 0;
+uint16_t Buffer[SIZE];
 
 void Debug_Init(void){
   // write this as part of Lab 10
+    for (int i = 0; i < SIZE; ++i) {
+        IRBuf[i] = 0x00;
+        SWBuf[i] = 0x00;
+    }
+    I = 0;
 }
 void Debug_Dump(uint8_t x, uint8_t y){
   // write this as part of Lab 10
     if(I < SIZE){
-        P1Buf[I] = x;
-        P2Buf[I] = y;
+        IRBuf[I] = x;
+        SWBuf[I] = y;
         I++;
     }
 }
 void Debug_FlashInit(void){ 
   // write this as part of Lab 10
+    if(Flash_Erase(ROM_start) == 1)printf("error");
 }
 void Debug_FlashRecord(uint16_t *pt){
   // write this as part of Lab 10
+    if(Flash_WriteArray(pt, ROM_start, SIZE/2) != SIZE/2)printf("data was not all recorded");
 }
 void SysTick_Handler(void){ // every 1ms
   // write this as part of Lab 10
     if(interrupt_count == 0){//100Hz
-        irData = Reflectance_End();
-        bumpData = Bump_Read();
+        uint16_t Data = Reflectance_End();
+        Data = (Data<<8) + Bump_Read();
+        if(I < SIZE){
+            Buffer[I] = Data;
+            I++;
+        }else Semaphore = 1;
     }
     Reflectance_Start();//1000Hz
     interrupt_count = (interrupt_count + 1)%10;
@@ -112,14 +125,21 @@ int main(void){
     LaunchPad_Init();
     Reflectance_Init();
     Bump_Init();
+    Debug_FlashInit();
     SysTick_Init(48*1000, 0);
   while(1){
   // write this as part of Lab 10
-
+      if(Semaphore ==1){
+          P2->OUT |= 0x01;
+          Debug_FlashRecord(Buffer);
+          P2->OUT &= ~0x01;
+          Semaphore = 0;
+          I=0;
+      }
   }
 }
 
-int Program10_1(void){ uint8_t data=0;
+int main_1(void){ uint8_t data=0;
   Clock_Init48MHz();
   Debug_Init();
   LaunchPad_Init();
@@ -133,8 +153,6 @@ int Program10_1(void){ uint8_t data=0;
 
 
 // Driver test
-#define SIZE 256  // feel free to adjust the size
-uint16_t Buffer[SIZE];
 int Program10_2(void){ uint16_t i;
   Clock_Init48MHz();
   LaunchPad_Init(); // built-in switches and LEDs
@@ -154,21 +172,25 @@ int Program10_2(void){ uint16_t i;
 }
 
 
-int Program10_3(void){ uint16_t i;
+int main_2(void){ uint16_t i;
   Clock_Init48MHz();
   LaunchPad_Init(); // built-in switches and LEDs
   for(i=0;i<SIZE;i++){
     Buffer[i] = (i<<8)+(255-i); // test data
   }
+  Semaphore = 1;
   P1->OUT |= 0x01;
   Debug_FlashInit();
   P1->OUT &= ~0x01;
   i = 0;
   while(1){
-    P2->OUT |= 0x01;
-    Debug_FlashRecord(Buffer);
-    P2->OUT &= ~0x01;
-    i++;
+    if(Semaphore ==1){
+        P2->OUT |= 0x01;
+        Debug_FlashRecord(Buffer);
+        P2->OUT &= ~0x01;
+        i++;
+        Semaphore = 0;
+    }
   }
 }
 

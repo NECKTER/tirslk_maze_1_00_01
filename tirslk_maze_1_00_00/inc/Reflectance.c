@@ -190,7 +190,7 @@ int32_t Reflectance_Position(uint8_t data){//part3
 
 
 // ------------Reflectance_Start------------
-// Begin the process of reading the eight sensors
+// Begin the process of reading the eight sensors 0x01FE00FF 0x03FC02FD
 // Turn on the 8 IR LEDs
 // Pulse the 8 sensors high for 10 us
 // Make the sensor pins input

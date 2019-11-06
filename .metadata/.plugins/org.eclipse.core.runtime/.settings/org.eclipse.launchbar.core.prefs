@@ -8,6 +8,6 @@ org.eclipse.launchbar.core.descriptorType.default\:ADCSWTrigger/activeLaunchTarg
 org.eclipse.launchbar.core.descriptorType.default\:Lab06_GPIO/activeLaunchMode=debug
 org.eclipse.launchbar.core.descriptorType.default\:Lab08_Switches_LED/activeLaunchMode=run
 org.eclipse.launchbar.core.descriptorType.default\:Lab09_SysTick/activeLaunchMode=run
-org.eclipse.launchbar.core.descriptorType.default\:Lab10_Debug/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:Lab10_Debug/activeLaunchMode=debug
 org.eclipse.launchbar.core.descriptorType.default\:SimpleProject_asm/activeLaunchMode=debug
 org.eclipse.launchbar.core.descriptorType.default\:SineFunction/activeLaunchMode=debug
