@@ -66,25 +66,25 @@ void Pause(void){
   while(LaunchPad_Input()==0);  // wait for touch
   while(LaunchPad_Input());     // wait for release
 }
-int Program12_1(void){
+int main_0(void){
   Clock_Init48MHz();
   LaunchPad_Init(); // built-in switches and LEDs
   Bump_Init();      // bump switches
   Motor_InitSimple();     // your function
   while(1){
     Pause();
-    Motor_ForwardSimple(5000,2000);  // your function
+    Motor_ForwardSimple(5000,200);  // your function
     Pause();
-    Motor_BackwardSimple(5000,2000); // your function
+    Motor_BackwardSimple(5000,200); // your function
     Pause();
-    Motor_LeftSimple(5000,2000);     // your function
+    Motor_LeftSimple(5000,200);     // your function
     Pause();
-    Motor_RightSimple(5000,2000);    // your function
+    Motor_RightSimple(5000,200);    // your function
   }
 }
 
 // Voltage current and speed as a function of duty cycle
-int Program12_2(void){
+int main_2(void){
   uint16_t duty;
   Clock_Init48MHz();
   LaunchPad_Init();   // built-in switches and LEDs
@@ -94,19 +94,19 @@ int Program12_2(void){
     for(duty=2000; duty<=8000; duty=duty+2000){
       Motor_StopSimple();   // measure current
       Pause();
-      Motor_LeftSimple(duty,6000);  // measure current
+      Motor_LeftSimple(duty,500);  // measure current
     }
   }
 }
 
-int Program12_3(void){
+int main_3(void){
   Clock_Init48MHz();
   LaunchPad_Init();   // built-in switches and LEDs
   Bump_Init();        // bump switches
   Motor_InitSimple(); // initialization
   while(1){
     Pause();
-    Motor_ForwardSimple(9900,15000); // max speed 15 s
+    Motor_ForwardSimple(9900,500); // max speed 15 s
   }
 }
 
@@ -117,7 +117,7 @@ int main(void){ // Program12_4
   Bump_Init();        // bump switches
   Motor_InitSimple(); // initialization
   while(1){
-  //  Pause(); // start on SW1 or SW2
+    Pause(); // start on SW1 or SW2
     LaunchPad_Output(0x02);
     Motor_ForwardSimple(5000,350);  // 3.5 seconds and stop
     LaunchPad_Output(0x00);
@@ -126,7 +126,7 @@ int main(void){ // Program12_4
     Motor_BackwardSimple(3000,200); // reverse 2 sec
     LaunchPad_Output(0x03);
     Motor_LeftSimple(3000,200);     // right turn 2 sec
-    if(Bump_Read()){
+    if(Bump_Read() < 0x3F){
       LaunchPad_Output(0x01);
       Motor_BackwardSimple(3000,100);// reverse 1 sec
       LaunchPad_Output(0x03);

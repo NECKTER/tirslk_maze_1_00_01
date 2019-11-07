@@ -68,13 +68,21 @@ void Motor_InitSimple(void){
 // initialize P1.6 and P1.7 and make them outputs
 // write this as part of Lab 12
 
+    SysTick_Init();
     //GPIO for .6-.7 in P1-P3
     P5->SEL0 &= ~0x30;
     P5->SEL1 &= ~0x30;
+//    P1->SEL0 &= ~0xC0;
+//    P1->SEL1 &= ~0xC0;
     P2->SEL0 &= ~0xC0;
     P2->SEL1 &= ~0xC0;
     P3->SEL0 &= ~0xC0;
     P3->SEL1 &= ~0xC0;
+
+    P5->DIR |= 0x30;
+//    P1->DIR |= 0xC0;
+    P2->DIR |= 0xC0;
+    P3->DIR |= 0xC0;
 
     //TODO: should this be 1
     P3->OUT &= ~0xC0;   // low current sleep mode
@@ -84,6 +92,7 @@ void Motor_StopSimple(void){
 // Stops both motors, puts driver to sleep
 // Returns right away
   P5->OUT &= ~0x30;
+//  P1->OUT &= ~0xC0;
   P2->OUT &= ~0xC0;   // off
   P3->OUT &= ~0xC0;   // low current sleep mode
 }
@@ -96,6 +105,7 @@ void Motor_ForwardSimple(uint16_t duty, uint32_t time){
     uint16_t low = 10000 - duty;
     //480000 = 10ms  10000*scale=480000 scale = 48
     P5->OUT &= ~0x30;
+//    P1->OUT &= ~0xC0;
     P2->OUT |= 0xC0;
 
     uint32_t i;
@@ -120,6 +130,7 @@ void Motor_BackwardSimple(uint16_t duty, uint32_t time){
     uint16_t low = 10000 - duty;
     //480000 = 10ms  10000*scale=480000 scale = 48
     P5->OUT |= 0x30;
+//    P1->OUT |= 0xC0;
     P2->OUT |= 0xC0;
 
     uint32_t i;
@@ -145,6 +156,7 @@ void Motor_LeftSimple(uint16_t duty, uint32_t time){
     uint16_t low = 10000 - duty;
     //480000 = 10ms  10000*scale=480000 scale = 48
     P5->OUT &= ~0x10;
+//    P1->OUT &= ~0x40;
     P2->OUT |= 0x40;
 
     uint32_t i;
@@ -170,6 +182,7 @@ void Motor_RightSimple(uint16_t duty, uint32_t time){
     uint16_t low = 10000 - duty;
         //480000 = 10ms  10000*scale=480000 scale = 48
         P5->OUT &= ~0x20;
+//        P1->OUT &= ~0x80;
         P2->OUT |= 0x80;
 
         uint32_t i;
