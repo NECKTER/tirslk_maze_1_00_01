@@ -103,7 +103,8 @@ void Debug_FlashInit(void){
 }
 void Debug_FlashRecord(uint16_t *pt){
   // write this as part of Lab 10
-    if(Flash_WriteArray(pt, ROM_start, SIZE/2) != SIZE/2)printf("data was not all recorded");
+    uint32_t temp = (uint32_t)pt;
+    if(Flash_WriteArray(temp, ROM_start, SIZE/2) != SIZE/2)printf("data was not all recorded");
 }
 void SysTick_Handler(void){ // every 1ms
   // write this as part of Lab 10
@@ -129,7 +130,7 @@ int main(void){
     SysTick_Init(48*1000, 0);
   while(1){
   // write this as part of Lab 10
-      if(Semaphore ==1){
+      if(Semaphore == 1){
           P2->OUT |= 0x01;
           Debug_FlashRecord(Buffer);
           P2->OUT &= ~0x01;
