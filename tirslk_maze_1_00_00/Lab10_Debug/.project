@@ -51,6 +51,16 @@
 			<locationURI>PARENT-1-PROJECT_LOC/inc/LaunchPad.c</locationURI>
 		</link>
 		<link>
+			<name>Motor.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/Motor.c</locationURI>
+		</link>
+		<link>
+			<name>PWM.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/PWM.c</locationURI>
+		</link>
+		<link>
 			<name>Reflectance.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/inc/Reflectance.c</locationURI>
@@ -59,6 +69,16 @@
 			<name>SysTickInts.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/inc/SysTickInts.c</locationURI>
+		</link>
+		<link>
+			<name>TExaS.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/TExaS.c</locationURI>
+		</link>
+		<link>
+			<name>TimerA1.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/inc/TimerA1.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

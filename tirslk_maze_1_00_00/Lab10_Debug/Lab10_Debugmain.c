@@ -70,54 +70,35 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\CortexM.h"
 #include "..\inc\LaunchPad.h"
 #include "..\inc\FlashProgram.h"
+#include "..\inc\Motor.h"
+#include "..\inc\TimerA1.h"
 
 int interrupt_count = 1;
 #define SIZE 256
 #define ROM_start 0x00020000
 #define ROM_end 0x0003FFFF
-uint8_t IRBuf[SIZE];
-uint8_t SWBuf[SIZE];
-uint32_t I;
-uint8_t Semaphore = 0;
-uint16_t Buffer[SIZE];
+#define REDLED (*((volatile uint8_t *)(0x42098060)))
+#define BLUELED (*((volatile uint8_t *)(0x42098068)))
 
-void Debug_Init(void){
-  // write this as part of Lab 10
-    for (int i = 0; i < SIZE; ++i) {
-        IRBuf[i] = 0x00;
-        SWBuf[i] = 0x00;
-    }
-    I = 0;
-}
-void Debug_Dump(uint8_t x, uint8_t y){
-  // write this as part of Lab 10
-    if(I < SIZE){
-        IRBuf[I] = x;
-        SWBuf[I] = y;
-        I++;
-    }
-}
-void Debug_FlashInit(void){ 
-  // write this as part of Lab 10
-    if(Flash_Erase(ROM_start) == 1)printf("error");
-}
-void Debug_FlashRecord(uint16_t *pt){
-  // write this as part of Lab 10
-    uint32_t temp = (uint32_t)pt;
-    if(Flash_WriteArray(temp, ROM_start, SIZE/2) != SIZE/2)printf("data was not all recorded");
-}
+uint16_t IRData = 0;
+
+
 void SysTick_Handler(void){ // every 1ms
   // write this as part of Lab 10
     if(interrupt_count == 0){//100Hz
-        uint16_t Data = Reflectance_End();
-        Data = (Data<<8) + Bump_Read();
-        if(I < SIZE){
-            Buffer[I] = Data;
-            I++;
-        }else Semaphore = 1;
+        IRData = Reflectance_Position(Reflectance_End());
     }
     Reflectance_Start();//1000Hz
     interrupt_count = (interrupt_count + 1)%10;
+}
+
+void collision(){
+    if(Bump_Read() < 0x3F){
+        Motor_Stop();
+        Motor_Backward(7500,7500);
+        Clock_Delay1ms(1000);
+        Motor_Stop();
+    }
 }
 
 int main(void){
@@ -126,97 +107,72 @@ int main(void){
     LaunchPad_Init();
     Reflectance_Init();
     Bump_Init();
-    Debug_FlashInit();
+    Motor_Init();
+    TimerA1_Init(&collision,5000);
     SysTick_Init(48*1000, 0);
+    EnableInterrupts();
   while(1){
   // write this as part of Lab 10
-      if(Semaphore == 1){
-          P2->OUT |= 0x01;
-          Debug_FlashRecord(Buffer);
-          P2->OUT &= ~0x01;
-          Semaphore = 0;
-          I=0;
-      }
-  }
-}
-
-int main_1(void){ uint8_t data=0;
-  Clock_Init48MHz();
-  Debug_Init();
-  LaunchPad_Init();
-  while(1){
-    P1->OUT |= 0x01;
-    Debug_Dump(data,data+1);// linear sequence
-    P1->OUT &= ~0x01;
-    data=data+2;
-  }
-}
-
-
-// Driver test
-int Program10_2(void){ uint16_t i;
-  Clock_Init48MHz();
-  LaunchPad_Init(); // built-in switches and LEDs
-  for(i=0;i<SIZE;i++){
-    Buffer[i] = (i<<8)+(255-i); // test data
-  }
-  i = 0;
-  while(1){
-    P1->OUT |= 0x01;
-    Debug_FlashInit();
-    P1->OUT &= ~0x01;
-    P2->OUT |= 0x01;
-    Debug_FlashRecord(Buffer); // 114us
-    P2->OUT &= ~0x01;
-    i++;
-  }
-}
-
-
-int main_2(void){ uint16_t i;
-  Clock_Init48MHz();
-  LaunchPad_Init(); // built-in switches and LEDs
-  for(i=0;i<SIZE;i++){
-    Buffer[i] = (i<<8)+(255-i); // test data
-  }
-  Semaphore = 1;
-  P1->OUT |= 0x01;
-  Debug_FlashInit();
-  P1->OUT &= ~0x01;
-  i = 0;
-  while(1){
-    if(Semaphore ==1){
-        P2->OUT |= 0x01;
-        Debug_FlashRecord(Buffer);
-        P2->OUT &= ~0x01;
-        i++;
-        Semaphore = 0;
+      switch (IRData) {
+        case 777://err Lost
+            REDLED &= ~0x01;
+            BLUELED &= ~0x01;
+            Motor_Forward(7500,0);
+            break;
+        case 999://treasure
+            REDLED |= 0x01;
+            BLUELED |= 0x01;
+            return 0;
+        case -322 ... -238://Way left
+            BLUELED &= ~0x01;
+            REDLED |= 0x01;
+            Motor_Forward(3000,7500);
+            Clock_Delay1ms(500);
+            break;
+        case -237 ... -143://left
+            BLUELED &= ~0x01;
+            REDLED |= 0x01;
+            Motor_Forward(4500,7500);
+            Clock_Delay1ms(350);
+            break;
+        case -142 ... -48://slightly left
+            BLUELED &= ~0x01;
+            REDLED |= 0x01;
+            Motor_Forward(6000,7500);
+            Clock_Delay1ms(200);
+            break;
+        case -47 ... 47://centered
+            REDLED |= 0x01;
+            BLUELED |= 0x01;
+            Motor_Forward(7500,7500);
+            break;
+        case 48 ... 142://slightly right
+            REDLED &= ~0x01;
+            BLUELED |= 0x01;
+            Motor_Forward(7500,6000);
+            Clock_Delay1ms(200);
+            break;
+        case 143 ... 237://right
+            REDLED &= ~0x01;
+            BLUELED |= 0x01;
+            Motor_Forward(7500,4500);
+            Clock_Delay1ms(350);
+            break;
+        case 238 ... 322://way right
+            REDLED &= ~0x01;
+            BLUELED |= 0x01;
+            Motor_Forward(7500,3000);
+            Clock_Delay1ms(500);
+            break;
+        default://spin??!!
+//            Motor_Forward(7500,0);
+            REDLED &= ~0x01;
+            BLUELED &= ~0x01;
+            Motor_Left(14000,14000);
+            Clock_Delay1ms(500);
+            Motor_Stop();
+            break;
     }
-  }
-}
 
-/*
-uint8_t Buffer[1000];
-uint32_t I=0;
-uint8_t *pt;
-void DumpI(uint8_t x){
-  if(I<1000){
-    Buffer[I]=x;
-    I++;
   }
 }
-void DumpPt(uint8_t x){
-  if(pt<&Buffer[1000]){
-    *pt=x;
-    pt++;
-  }
-}
-void Activity(void){
-  DumpI(5);
-  DumpI(6);
-  pt = Buffer;
-  DumpPt(7);
-  DumpPt(8);
-
-}
-*/

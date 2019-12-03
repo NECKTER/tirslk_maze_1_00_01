@@ -16,6 +16,7 @@ ORDERED_OBJS += \
 "./LaunchPad.obj" \
 "./MotorSimple.obj" \
 "./SysTick.obj" \
+"./TExaS.obj" \
 "./startup_msp432p401r_ccs.obj" \
 "./system_msp432p401r.obj" \
 "../msp432p401r.cmd" \
@@ -161,8 +162,8 @@ Lab12_Motors.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Bump.obj" "Clock.obj" "Lab12_Motorsmain.obj" "LaunchPad.obj" "MotorSimple.obj" "SysTick.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
-	-$(RM) "Bump.d" "Clock.d" "Lab12_Motorsmain.d" "LaunchPad.d" "MotorSimple.d" "SysTick.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
+	-$(RM) "Bump.obj" "Clock.obj" "Lab12_Motorsmain.obj" "LaunchPad.obj" "MotorSimple.obj" "SysTick.obj" "TExaS.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" 
+	-$(RM) "Bump.d" "Clock.d" "Lab12_Motorsmain.d" "LaunchPad.d" "MotorSimple.d" "SysTick.d" "TExaS.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

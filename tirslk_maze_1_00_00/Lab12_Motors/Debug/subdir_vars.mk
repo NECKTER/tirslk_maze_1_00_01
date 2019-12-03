@@ -15,6 +15,7 @@ C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/
 C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/LaunchPad.c \
 C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/MotorSimple.c \
 C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/SysTick.c \
+C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/TExaS.c \
 ../startup_msp432p401r_ccs.c \
 ../system_msp432p401r.c 
 
@@ -25,6 +26,7 @@ C_DEPS += \
 ./LaunchPad.d \
 ./MotorSimple.d \
 ./SysTick.d \
+./TExaS.d \
 ./startup_msp432p401r_ccs.d \
 ./system_msp432p401r.d 
 
@@ -35,6 +37,7 @@ OBJS += \
 ./LaunchPad.obj \
 ./MotorSimple.obj \
 ./SysTick.obj \
+./TExaS.obj \
 ./startup_msp432p401r_ccs.obj \
 ./system_msp432p401r.obj 
 
@@ -45,6 +48,7 @@ OBJS__QUOTED += \
 "LaunchPad.obj" \
 "MotorSimple.obj" \
 "SysTick.obj" \
+"TExaS.obj" \
 "startup_msp432p401r_ccs.obj" \
 "system_msp432p401r.obj" 
 
@@ -55,6 +59,7 @@ C_DEPS__QUOTED += \
 "LaunchPad.d" \
 "MotorSimple.d" \
 "SysTick.d" \
+"TExaS.d" \
 "startup_msp432p401r_ccs.d" \
 "system_msp432p401r.d" 
 
@@ -65,6 +70,7 @@ C_SRCS__QUOTED += \
 "C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/LaunchPad.c" \
 "C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/MotorSimple.c" \
 "C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/SysTick.c" \
+"C:/Users/nick_/Documents/School/127/tirslk_maze_1_00_01/tirslk_maze_1_00_00/inc/TExaS.c" \
 "../startup_msp432p401r_ccs.c" \
 "../system_msp432p401r.c" 
 

@@ -53,9 +53,10 @@ policies, either expressed or implied, of the FreeBSD Project.
 // Right motor direction connected to P1.6 (J2.15)
 // Right motor PWM connected to P2.6/TA0CCP3 (J4.39)
 // Right motor enable connected to P3.6 (J2.11)
-
+#include <stdint.h>
 #include "msp.h"
 #include "..\inc\bump.h"
+#include "..\inc\TExaS.h"
 #include "..\inc\Clock.h"
 #include "..\inc\SysTick.h"
 #include "..\inc\LaunchPad.h"
@@ -114,18 +115,34 @@ int main_3(void){
 int main(void){ // Program12_4
   Clock_Init48MHz();
   LaunchPad_Init();   // built-in switches and LEDs
+  TExaS_Init(LOGICANALYZER_P3);
+  TExaS_Init(SCOPE);
   Bump_Init();        // bump switches
   Motor_InitSimple(); // initialization
   while(1){
+    LaunchPad_Output(0x02);
+    Motor_ForwardSimple(1250,1);  // 3.5 seconds and stop
+    if(Bump_Read() < 0x3F){
+       LaunchPad_Output(0x00);
+       LaunchPad_Output(0x01);
+       Motor_BackwardSimple(1250,200); // reverse 2 sec
+       LaunchPad_Output(0x03);
+       Motor_LeftSimple(3000,35);   // right turn 2 sec
+    }
+  }
+}
+
+/*
+ while(1){
     Pause(); // start on SW1 or SW2
     LaunchPad_Output(0x02);
-    Motor_ForwardSimple(5000,350);  // 3.5 seconds and stop
+    Motor_ForwardSimple(9000,350);  // 3.5 seconds and stop
     LaunchPad_Output(0x00);
     Motor_StopSimple(); Clock_Delay1ms(500);
     LaunchPad_Output(0x01);
-    Motor_BackwardSimple(3000,200); // reverse 2 sec
+    Motor_BackwardSimple(1000,200); // reverse 2 sec
     LaunchPad_Output(0x03);
-    Motor_LeftSimple(3000,200);     // right turn 2 sec
+    Motor_LeftSimple(5000,200);     // right turn 2 sec
     if(Bump_Read() < 0x3F){
       LaunchPad_Output(0x01);
       Motor_BackwardSimple(3000,100);// reverse 1 sec
@@ -133,6 +150,5 @@ int main(void){ // Program12_4
       Motor_LeftSimple(3000,200);   // right turn 2 sec
     }
   }
-}
-
+ * */
 

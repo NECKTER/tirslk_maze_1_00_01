@@ -163,9 +163,9 @@ uint8_t Reflectance_Center(uint32_t time){ //part1
 // Perform sensor integration
 // Input: data is 8-bit result from line sensor
 // Output: position in 0.1mm relative to center of line
-int32_t Reflectance_Position(uint8_t data){//part3
+int16_t Reflectance_Position(uint8_t data){//part3
     // write this as part of Lab 6
-    int32_t position = 0;
+    int16_t position = 0;
     int w[] = {332,237,142,47,-47,-142,-237,-322};
     int irs[8];
     //data into array
@@ -182,6 +182,8 @@ int32_t Reflectance_Position(uint8_t data){//part3
             count++;
         }
     }
+    if(!count) return 777;
+    if(count == 8) return 999;
     position = position/count;
 //    printf("%d\n",position);
 

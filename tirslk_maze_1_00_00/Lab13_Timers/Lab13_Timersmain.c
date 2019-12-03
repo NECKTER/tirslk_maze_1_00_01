@@ -84,6 +84,7 @@ int Program13_1(void){
   LaunchPad_Init(); // built-in switches and LEDs
   Bump_Init();      // bump switches
   Motor_Init();     // your function
+  TExaS_Init(LOGICANALYZER_P2);
   while(1){
     TimedPause(4000);
     Motor_Forward(7500,7500);  // your function
@@ -109,6 +110,8 @@ void Task(void){
 int Program13_2(void){
   Clock_Init48MHz();
   LaunchPad_Init();  // built-in switches and LEDs
+  TExaS_Init(LOGICANALYZER_P2);
+//  TExaS_Init(SCOPE);
   TimerA1_Init(&Task,50000);  // 10 Hz
   EnableInterrupts();
   while(1){
@@ -116,14 +119,34 @@ int Program13_2(void){
   }
 }
 
+void collision(){
+    if(Bump_Read() < 0x3F){
+        Motor_Stop();
+        Motor_Backward(7500,7500);
+        Clock_Delay1ms(1000);
+        Motor_Stop();
+    }
+}
+
 int main(void){
     // write a main program that uses PWM to move the robot
     // like Program13_1, but uses TimerA1 to periodically
     // check the bump switches, stopping the robot on a collision
- 
- 
-  while(1){
-    
-  }
+    Clock_Init48MHz();
+    LaunchPad_Init(); // built-in switches and LEDs
+    Bump_Init();      // bump switches
+    Motor_Init();     // your function
+    TimerA1_Init(&collision,5000);
+    EnableInterrupts();
+    while(1){
+        Motor_Forward(7500,7500);  // your function
+        Clock_Delay1ms(2000);
+        Motor_Left(14000,14000);     // your function
+        Clock_Delay1ms(177);
+//        Motor_Forward(7500,7500);  // your function
+//        Clock_Delay1ms(250);
+//        Motor_Right(14000,14000);    // your function
+//        Clock_Delay1ms(250);
+    }
 }
 
