@@ -72,21 +72,35 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\FlashProgram.h"
 #include "..\inc\Motor.h"
 #include "..\inc\TimerA1.h"
+#include "..\inc\TExaS.h"
 
 int interrupt_count = 1;
-#define SIZE 256
+#define SIZE 3
 #define ROM_start 0x00020000
 #define ROM_end 0x0003FFFF
 #define REDLED (*((volatile uint8_t *)(0x42098060)))
 #define BLUELED (*((volatile uint8_t *)(0x42098068)))
 
-uint16_t IRData = 0;
+int32_t IRData[SIZE];
+int32_t IRavg = 0;
+int8_t i = 0;
+int max = 4000;
+int adjust = 3000;
+int turn = 2000;
+int wayOff = 500;
 
+void TimedPause(uint32_t time){
+  Motor_Stop();
+  while(LaunchPad_Input()==0);  // wait for touch
+  while(LaunchPad_Input());     // wait for release
+  Clock_Delay1ms(time);          // run for a while and stop
+}
 
 void SysTick_Handler(void){ // every 1ms
   // write this as part of Lab 10
     if(interrupt_count == 0){//100Hz
-        IRData = Reflectance_Position(Reflectance_End());
+        IRData[i] = Reflectance_Position(Reflectance_End());
+        i = (i+1)%SIZE;
     }
     Reflectance_Start();//1000Hz
     interrupt_count = (interrupt_count + 1)%10;
@@ -96,9 +110,25 @@ void collision(){
     if(Bump_Read() < 0x3F){
         Motor_Stop();
         Motor_Backward(7500,7500);
-        Clock_Delay1ms(1000);
+        Clock_Delay1ms(750);
         Motor_Stop();
     }
+}
+
+void bufferInit(){
+    uint8_t i;
+    for (i = 0; i < SIZE; ++i) {
+        IRData[i] = 0;
+    }
+}
+
+int32_t average(int32_t *values, uint8_t size){
+    int32_t average = 0;
+    uint8_t i;
+    for (i = 0; i < size; ++i) {
+        average = average + values[i];
+    }
+    return average/size;
 }
 
 int main(void){
@@ -109,68 +139,70 @@ int main(void){
     Bump_Init();
     Motor_Init();
     TimerA1_Init(&collision,5000);
-    SysTick_Init(48*1000, 0);
+    SysTick_Init((48*1000)*2, 0);
     EnableInterrupts();
+    bufferInit();
+    TimedPause(500);
+    TExaS_Init(LOGICANALYZER_P7);
   while(1){
   // write this as part of Lab 10
-      switch (IRData) {
-        case 777://err Lost
+      Clock_Delay1ms(10);
+      IRavg = average(IRData, SIZE);
+      switch (IRavg) {
+        case -400://err Lost
             REDLED &= ~0x01;
             BLUELED &= ~0x01;
-            Motor_Forward(7500,0);
+            Motor_Backward(turn,turn);
+            Clock_Delay1ms(750);
             break;
-        case 999://treasure
+        case 400://treasure
             REDLED |= 0x01;
             BLUELED |= 0x01;
-            return 0;
-        case -322 ... -238://Way left
+            Motor_Stop();
+//            return 0;
+            break;
+        case -360 ... -238://Way left
             BLUELED &= ~0x01;
             REDLED |= 0x01;
-            Motor_Forward(3000,7500);
-            Clock_Delay1ms(500);
+            Motor_Forward(wayOff,max);
             break;
         case -237 ... -143://left
             BLUELED &= ~0x01;
             REDLED |= 0x01;
-            Motor_Forward(4500,7500);
-            Clock_Delay1ms(350);
+            Motor_Forward(turn,max);
             break;
-        case -142 ... -48://slightly left
+        case -142 ... -51://slightly left
             BLUELED &= ~0x01;
             REDLED |= 0x01;
-            Motor_Forward(6000,7500);
-            Clock_Delay1ms(200);
+            Motor_Forward(adjust,max);
             break;
-        case -47 ... 47://centered
+        case -50 ... 50://centered
             REDLED |= 0x01;
             BLUELED |= 0x01;
-            Motor_Forward(7500,7500);
+            Motor_Forward(max,max);
             break;
-        case 48 ... 142://slightly right
+        case 51 ... 142://slightly right
             REDLED &= ~0x01;
             BLUELED |= 0x01;
-            Motor_Forward(7500,6000);
-            Clock_Delay1ms(200);
+            Motor_Forward(max,adjust);
             break;
         case 143 ... 237://right
             REDLED &= ~0x01;
             BLUELED |= 0x01;
-            Motor_Forward(7500,4500);
-            Clock_Delay1ms(350);
+            Motor_Forward(max,turn);
             break;
-        case 238 ... 322://way right
+        case 238 ... 360://way right
             REDLED &= ~0x01;
             BLUELED |= 0x01;
-            Motor_Forward(7500,3000);
-            Clock_Delay1ms(500);
+            Motor_Forward(max,wayOff);
             break;
         default://spin??!!
 //            Motor_Forward(7500,0);
             REDLED &= ~0x01;
             BLUELED &= ~0x01;
-            Motor_Left(14000,14000);
-            Clock_Delay1ms(500);
-            Motor_Stop();
+            Motor_Forward(2000,1700);
+//            Clock_Delay1ms(500);
+//            Motor_Stop();
             break;
     }
 

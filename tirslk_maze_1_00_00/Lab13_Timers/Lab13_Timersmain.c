@@ -68,8 +68,6 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\SysTick.h"
 #include "..\inc\CortexM.h"
 #include "..\inc\LaunchPad.h"
-#include "..\inc\Motor.h"
-#include "..\inc\TimerA1.h"
 #include "..\inc\TExaS.h"
 
 // Driver test

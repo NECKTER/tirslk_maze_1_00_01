@@ -26,6 +26,7 @@ Lab10_Debugmain.obj: ../../inc/LaunchPad.h
 Lab10_Debugmain.obj: ../../inc/FlashProgram.h
 Lab10_Debugmain.obj: ../../inc/Motor.h
 Lab10_Debugmain.obj: ../../inc/TimerA1.h
+Lab10_Debugmain.obj: ../../inc/TExaS.h
 
 ../Lab10_Debugmain.c: 
 C:/ti/ccs910/ccs/ccs_base/arm/include/msp.h: 
@@ -53,3 +54,4 @@ C:/ti/ccs910/ccs/ccs_base/arm/include/system_msp432p401r.h:
 ../../inc/FlashProgram.h: 
 ../../inc/Motor.h: 
 ../../inc/TimerA1.h: 
+../../inc/TExaS.h: 
