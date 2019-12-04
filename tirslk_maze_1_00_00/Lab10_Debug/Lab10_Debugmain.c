@@ -75,19 +75,20 @@ policies, either expressed or implied, of the FreeBSD Project.
 #include "..\inc\TExaS.h"
 
 int interrupt_count = 1;
-#define SIZE 3
+#define SIZE 5
+#define readFrequenct 10 //1 over this value is duty cycle
 #define ROM_start 0x00020000
 #define ROM_end 0x0003FFFF
 #define REDLED (*((volatile uint8_t *)(0x42098060)))
 #define BLUELED (*((volatile uint8_t *)(0x42098068)))
 
-int32_t IRData[SIZE];
+int32_t IRData[SIZE], previous[SIZE];
 int32_t IRavg = 0;
-int8_t i = 0;
-int max = 4000;
-int adjust = 3000;
-int turn = 2000;
-int wayOff = 500;
+int8_t i = 0, j = 0;
+int max = 2000;
+int adjust = 1000;
+int turn = 500;
+int wayOff = 0;
 
 void TimedPause(uint32_t time){
   Motor_Stop();
@@ -103,14 +104,16 @@ void SysTick_Handler(void){ // every 1ms
         i = (i+1)%SIZE;
     }
     Reflectance_Start();//1000Hz
-    interrupt_count = (interrupt_count + 1)%10;
+    interrupt_count = (interrupt_count + 1)%readFrequenct;
 }
 
 void collision(){
     if(Bump_Read() < 0x3F){
         Motor_Stop();
-        Motor_Backward(7500,7500);
-        Clock_Delay1ms(750);
+        Motor_Backward(max,max);
+        Clock_Delay1ms(1000);
+        Motor_Right(max,max);
+        Clock_Delay1ms(500);
         Motor_Stop();
     }
 }
@@ -119,6 +122,7 @@ void bufferInit(){
     uint8_t i;
     for (i = 0; i < SIZE; ++i) {
         IRData[i] = 0;
+        previous[i] = 0;
     }
 }
 
@@ -139,72 +143,141 @@ int main(void){
     Bump_Init();
     Motor_Init();
     TimerA1_Init(&collision,5000);
-    SysTick_Init((48*1000)*2, 0);
+    SysTick_Init((48*1000)*4, 0);
     EnableInterrupts();
     bufferInit();
     TimedPause(500);
     TExaS_Init(LOGICANALYZER_P7);
   while(1){
   // write this as part of Lab 10
-      Clock_Delay1ms(10);
       IRavg = average(IRData, SIZE);
       switch (IRavg) {
-        case -400://err Lost
-            REDLED &= ~0x01;
-            BLUELED &= ~0x01;
-            Motor_Backward(turn,turn);
-            Clock_Delay1ms(750);
-            break;
-        case 400://treasure
+        case 371://treasure
             REDLED |= 0x01;
             BLUELED |= 0x01;
-            Motor_Stop();
+//            Motor_Right(max,max);
 //            return 0;
             break;
-        case -360 ... -238://Way left
+        case -370 ... -238://Way left
             BLUELED &= ~0x01;
             REDLED |= 0x01;
-            Motor_Forward(wayOff,max);
+//            Motor_Forward(wayOff,max);
+            Motor_Right(max, max);
             break;
         case -237 ... -143://left
             BLUELED &= ~0x01;
             REDLED |= 0x01;
             Motor_Forward(turn,max);
+//            Motor_Left(adjust, adjust);
             break;
-        case -142 ... -51://slightly left
+        case -142 ... -71://slightly left
             BLUELED &= ~0x01;
             REDLED |= 0x01;
             Motor_Forward(adjust,max);
+//            Motor_Left(turn, turn);
             break;
-        case -50 ... 50://centered
+        case -70 ... 70://centered
             REDLED |= 0x01;
             BLUELED |= 0x01;
             Motor_Forward(max,max);
             break;
-        case 51 ... 142://slightly right
+        case 71 ... 142://slightly right
             REDLED &= ~0x01;
             BLUELED |= 0x01;
             Motor_Forward(max,adjust);
+//            Motor_Right(turn, turn);
             break;
         case 143 ... 237://right
             REDLED &= ~0x01;
             BLUELED |= 0x01;
             Motor_Forward(max,turn);
+//            Motor_Right(adjust, adjust);
             break;
-        case 238 ... 360://way right
+        case 238 ... 370://way right
             REDLED &= ~0x01;
             BLUELED |= 0x01;
-            Motor_Forward(max,wayOff);
+//            Motor_Forward(max,wayOff);
+            Motor_Left(max, max);
             break;
         default://spin??!!
-//            Motor_Forward(7500,0);
-            REDLED &= ~0x01;
+//          REDLED &= ~0x01;
             BLUELED &= ~0x01;
-            Motor_Forward(2000,1700);
-//            Clock_Delay1ms(500);
-//            Motor_Stop();
+            Motor_Backward(max,max);
+            Clock_Delay1ms(100);
+//            if(average(previous, SIZE)>0){
+//                Motor_Left(max,max);
+//            }else{
+//                Motor_Right(max,max);
+//            }
+//            Clock_Delay1ms(250);
             break;
-    }
-
+          }//if backs up a few times in a row go back and turn left
+      previous[j] = IRavg;
+      j = (j+1)%SIZE;
   }
 }
+/*
+switch (IRavg) {
+    case -400://err Lost
+        REDLED &= ~0x01;
+        BLUELED &= ~0x01;
+        Motor_Backward(turn,turn);
+        Clock_Delay1ms(750);
+        if(average(previous, SIZE)>0){
+            Motor_Backward(wayOff,adjust);
+        }else{
+            Motor_Backward(adjust,wayOff);
+        }
+        Clock_Delay1ms(250);
+        break;
+    case 400://treasure
+        REDLED |= 0x01;
+        BLUELED |= 0x01;
+        Motor_Stop();
+//            return 0;
+        break;
+    case -360 ... -238://Way left
+        BLUELED &= ~0x01;
+        REDLED |= 0x01;
+        Motor_Forward(wayOff,max);
+        break;
+    case -237 ... -143://left
+        BLUELED &= ~0x01;
+        REDLED |= 0x01;
+        Motor_Forward(turn,max);
+        break;
+    case -142 ... -51://slightly left
+        BLUELED &= ~0x01;
+        REDLED |= 0x01;
+        Motor_Forward(adjust,max);
+        break;
+    case -50 ... 50://centered
+        REDLED |= 0x01;
+        BLUELED |= 0x01;
+        Motor_Forward(max,max);
+        break;
+    case 51 ... 142://slightly right
+        REDLED &= ~0x01;
+        BLUELED |= 0x01;
+        Motor_Forward(max,adjust);
+        break;
+    case 143 ... 237://right
+        REDLED &= ~0x01;
+        BLUELED |= 0x01;
+        Motor_Forward(max,turn);
+        break;
+    case 238 ... 360://way right
+        REDLED &= ~0x01;
+        BLUELED |= 0x01;
+        Motor_Forward(max,wayOff);
+        break;
+    default://spin??!!
+//            Motor_Forward(7500,0);
+        REDLED &= ~0x01;
+        BLUELED &= ~0x01;
+        Motor_Forward(2000,1700);
+//            Clock_Delay1ms(500);
+//            Motor_Stop();
+        break;
+  }
+      */

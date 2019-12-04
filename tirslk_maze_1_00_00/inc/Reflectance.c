@@ -182,8 +182,8 @@ int32_t Reflectance_Position(uint8_t data){//part3
             count++;
         }
     }
-    if(!count) return -400;//lost
-    if(count == 8) return 400;//treasure
+    if(!count) return -371;
+    if(count == 8) return 371;//treasure
     position = position/count;
 //    printf("%d\n",position);
 
